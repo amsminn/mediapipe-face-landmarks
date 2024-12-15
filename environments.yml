@@ -1,12 +1,13 @@
 name: mediapipe-face-landmarks
 channels:
   - conda-forge
+  - defaults
 dependencies:
   - python=3.10
-  - mediapipe>=0.9.0
-  - opencv>=4.5.0
-  - numpy>=1.21.0
+  - numpy
+  - opencv
   - ffmpeg
   - pip
   - pip:
-      - yt-dlp 
+      - mediapipe>=0.9.0
+      - yt-dlp

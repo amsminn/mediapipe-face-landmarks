@@ -47,6 +47,10 @@ ffmpeg -version
 yt-dlp --version
 ```
 
+Make sure that FFmpeg installed in the Conda environment is being used. Conflicts may arise if another version is accessed. 
+```bash
+which ffmpeg
+```
 ---
 
 ## How to Use
@@ -56,7 +60,7 @@ yt-dlp --version
 Download videos using a CSV file containing YouTube video IDs:
 
 ```bash
-python download_videos.py -i metadata.csv -o source_videos
+python download.py -i metadata.csv -o source_videos
 ```
 
 - **Input**: `metadata.csv` (a CSV file with a `video_id` column)
@@ -67,7 +71,7 @@ python download_videos.py -i metadata.csv -o source_videos
 Extract video segments where faces are detected for a minimum duration:
 
 ```bash
-python slice_videos.py -i "source_videos/video.mp4" -o slice_result -d 3
+python slicer.py -i "source_videos/video.mp4" -o slice_result -d 3
 ```
 
 - **Input**: Video file (e.g., `/source_videos/video.mp4`)

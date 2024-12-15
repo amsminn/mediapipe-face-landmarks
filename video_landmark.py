@@ -1,8 +1,8 @@
 import cv2
 import mediapipe as mp
+import subprocess
 import os
 import argparse
-import subprocess
 
 mp_face_mesh = mp.solutions.face_mesh
 mp_drawing = mp.solutions.drawing_utils
@@ -15,9 +15,11 @@ def process_video(input_path, output_path, version):
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = cap.get(cv2.CAP_PROP_FPS)
 
-    output_video_path = os.path.join(output_path, f"{os.path.basename(input_path).rsplit('.', 1)[0]}_v{version}.mp4")
+    temp_video_path = os.path.join(output_path, f"temp_{os.path.basename(input_path).rsplit('.', 1)[0]}_v{version}.mp4")
+    final_video_path = os.path.join(output_path, f"{os.path.basename(input_path).rsplit('.', 1)[0]}_v{version}.mp4")
+
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    out = cv2.VideoWriter(output_video_path, fourcc, fps, (width, height))
+    out = cv2.VideoWriter(temp_video_path, fourcc, fps, (width, height))
 
     with mp_face_mesh.FaceMesh(static_image_mode=False, max_num_faces=1, refine_landmarks=True, min_detection_confidence=0.5) as face_mesh:
         while cap.isOpened():
@@ -101,7 +103,15 @@ def process_video(input_path, output_path, version):
 
     cap.release()
     out.release()
-    print(f"Saved output video: {output_video_path}")
+
+    subprocess.run([
+        "ffmpeg", "-i", temp_video_path, "-i", input_path,
+        "-c:v", "copy", "-c:a", "aac", "-map", "0:v:0", "-map", "1:a:0",
+        "-shortest", final_video_path
+    ], check=True)
+
+    os.remove(temp_video_path) 
+    print(f"Saved output video with audio: {final_video_path}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Draw MediaPipe Face Mesh landmarks on video.")
