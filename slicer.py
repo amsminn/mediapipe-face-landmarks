@@ -58,7 +58,7 @@ def detect_faces_and_extract(video_path, output_dir, min_face_duration=3):
             "ffmpeg", "-i", video_path,
             "-ss", f"{start:.2f}", "-to", f"{end:.2f}",
             "-c:v", "libx264", "-preset", "ultrafast",
-            "-c:a", "aac",
+            "-c:a", "copy",
             output_path
         ], check=True)
 

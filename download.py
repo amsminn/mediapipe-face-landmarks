@@ -2,6 +2,13 @@ import csv
 import subprocess
 import argparse
 import os
+import re
+
+def clean_filename(filename: str, replace_with="_") -> str:
+    cleaned = re.sub(r'[^\w\s.-]', replace_with, filename)
+    cleaned = re.sub(rf'{re.escape(replace_with)}+', replace_with, cleaned)
+    cleaned = cleaned.strip().strip(replace_with)
+    return cleaned
 
 def download_videos(input_file, output_dir="source_videos"):
     if not os.path.exists(output_dir):
@@ -21,12 +28,19 @@ def download_videos(input_file, output_dir="source_videos"):
                 print(f"Downloading: {url}")
                 
                 try:
-                    output_path = os.path.join(output_dir, "%(title)s.%(ext)s")
+                    result = subprocess.run([
+                        "yt-dlp",
+                        "--get-title",
+                        url
+                    ], capture_output=True, text=True, check=True)
+                    video_title = result.stdout.strip()
+                    print(f"Video title: {video_title}")
+                    output_path = os.path.join(output_dir, f"{clean_filename(video_title)}.mp4")
                     subprocess.run([
                         "yt-dlp",
                         "-f", "bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4",
                         "--merge-output-format", "mp4",
-                        "-o", output_path,  # 출력 경로 지정
+                        "-o", output_path,
                         url
                     ], check=True)
                 except subprocess.CalledProcessError:
