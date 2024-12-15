@@ -34,7 +34,7 @@ This repository provides tools to process videos and build face landmark dataset
 Use the **`environment.yml`** file to set up the Conda environment:
 
 ```bash
-conda env create -f environment.yml
+conda env create -f environments.yml
 conda activate mediapipe-face-landmarks
 ```
 
